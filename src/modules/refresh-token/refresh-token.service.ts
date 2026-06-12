@@ -1,13 +1,14 @@
 import jwt from "jsonwebtoken";
 import { RefreshTokenRepository } from "./refresh-token.repository";
 import { generateAccessToken } from "../../utils/jwt";
+import logger from "../../utils/logger";
 
 export class RefreshTokenService {
   private repository = new RefreshTokenRepository();
 
   async refreshToken(token: string) {
     const existingToken = await this.repository.findRefreshToken(token);
-    console.log('Existing token:', existingToken);
+
     if (!existingToken) {
       throw new Error('Invalid refresh token');
     }
@@ -24,6 +25,10 @@ export class RefreshTokenService {
         email: string;
         role: string;
     };
+
+    logger.info(
+    `Refresh token used by user: ${decodedToken.email}`
+    );
     
     return generateAccessToken({
         id: decodedToken.id,
@@ -38,6 +43,9 @@ export class RefreshTokenService {
         throw new Error('Invalid refresh token');
     }
     await this.repository.deleteRefreshToken(token);
+    logger.info(
+    `User logged out`
+    );
      return { success: true, message: 'Logged out successfully' };
     }
    

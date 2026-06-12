@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import { AuthRepository } from './auth.repository';
 import { generateAccessToken, generateRefreshToken } from '../../utils/jwt';
 import { Role } from '../../generated/prisma/client';
+import logger from '../../utils/logger';
 
 export class AuthService {
     private repository = new AuthRepository();
@@ -18,10 +19,15 @@ export class AuthService {
         }
 
         const hashedPassword = await bcrypt.hash(data.password, 10);
-        return this.repository.createUser({
+        const user = await this.repository.createUser({
             ...data,
             password: hashedPassword
         });
+
+        logger.info(
+            `User registered: ${user.email}`
+        )
+        return user
     }
 
     async login(data: {
@@ -30,11 +36,17 @@ export class AuthService {
     }) {
         const user = await this.repository.findUserByEmail(data.email);
         if (!user) {
+            logger.warn(
+                `Login failed. Email not found: ${data.email}`
+            );
             throw new Error('Invalid credentials');
         }
 
         const isPasswordValid = await bcrypt.compare(data.password, user.password);
         if (!isPasswordValid) {
+            logger.warn(
+            `Login failed. Wrong password: ${data.email}`
+            );
             throw new Error('Invalid credentials');
         }
         const accessToken = generateAccessToken(user)
