@@ -11,10 +11,25 @@ export class AuthRepository {
         name: string;
         email: string;
         password: string;
+        role?: string;
     }) {
         return prisma.user.create({
             data
         })
+    }
+
+    async findUserById(id: string) {
+        return prisma.user.findUnique({
+            where: { id },
+            select : {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+                createdAt: true,
+
+            }
+        });
     }
 }
 

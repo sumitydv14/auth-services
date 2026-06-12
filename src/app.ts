@@ -4,6 +4,8 @@ import helmet from 'helmet';
 import healthRoute from './routes/health.route';
 import authRouter from './modules/auth/auth.routes';
 import { errorHandler } from './middlewares/error.middleware';
+import refreshTokenRouter from './modules/refresh-token/refresh-token.routes';
+import userRouter from './modules/user/user.routes';
 const app = express();
 
 app.use(express.json());
@@ -12,6 +14,8 @@ app.use(helmet());
 
 app.use('/health', healthRoute);
 app.use('/api/auth', authRouter);
+app.use('/api/refresh-token', refreshTokenRouter);
+app.use('/api', userRouter);
 app.use(errorHandler);
 app.get('/', (req, res) => {
     res.send({
