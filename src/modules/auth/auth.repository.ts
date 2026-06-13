@@ -11,7 +11,7 @@ export class AuthRepository {
         name: string;
         email: string;
         password: string;
-        role?: string;
+        role?: 'USER' | 'ADMIN';
     }) {
         return prisma.user.create({
             data
