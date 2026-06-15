@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import { AuthRepository } from './auth.repository';
 import { generateAccessToken, generateRefreshToken } from '../../utils/jwt';
-import { Role } from '../../generated/prisma/client';
+import { Role } from '@prisma/client';
 import logger from '../../utils/logger';
 
 export class AuthService {
