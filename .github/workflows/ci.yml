@@ -81,3 +81,20 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/auth-services-app:latest
             ghcr.io/${{ github.repository_owner }}/auth-services-app:${{ github.sha }}
 
+  deploy:
+    needs: publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/ubuntu/auth-service
+
+            docker compose pull
+            docker compose down
+            docker compose up -d
