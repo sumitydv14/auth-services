@@ -84,6 +84,7 @@ jobs:
   deploy:
     needs: publish
     runs-on: ubuntu-latest
+    environment: EC2_HOST
 
     steps:
       - name: Deploy to EC2
@@ -93,8 +94,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
-            cd /home/ubuntu/auth-service
-
-            docker compose pull
+            cd ~/auth-services
+            git pull origin master
             docker compose down
-            docker compose up -d
+            docker compose up -d --build
